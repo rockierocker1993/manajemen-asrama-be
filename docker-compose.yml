@@ -1,0 +1,12 @@
+services:
+  manajemen-asrama-be:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: manajemen-asrama-be
+    ports:
+      - "8877:8877"
+    env_file:
+      - .env
+    restart: unless-stopped
+

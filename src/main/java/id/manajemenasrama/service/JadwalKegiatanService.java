@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -209,5 +210,20 @@ public class JadwalKegiatanService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         List<JadwalKegiatanListResponseDto> jadwalKegiatanListResponseDtos = jadwalKegiatanRepository.findActiveTodayByUsernameAndHari(username, String.valueOf(DateUtil.getDayOfWeek(LocalDate.now())));
         return ResponseEntity.ok(ResponseUtil.buildSuccessResponse(ResponseCode.SUCCESS, jadwalKegiatanListResponseDtos));
+    }
+
+    public ResponseEntity<BaseResponse<JadwalKegiatanByDayDto>> meByDay() {
+        log.info("get jadwal kegiatan me by day");
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<JadwalKegiatanListByDayResponseDto> jadwalKegiatanListResponseDtos = jadwalKegiatanRepository.findActiveTodayByUsername(username);
+        return ResponseEntity.ok(ResponseUtil.buildSuccessResponse(ResponseCode.SUCCESS, JadwalKegiatanByDayDto.builder()
+                        .senin(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("1")).toList())
+                        .selasa(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("2")).toList())
+                        .rabu(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("3")).toList())
+                        .kamis(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("4")).toList())
+                        .jumat(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("5")).toList())
+                        .sabtu(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("6")).toList())
+                        .minggu(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("7")).toList())
+                .build()));
     }
 }

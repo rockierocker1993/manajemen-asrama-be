@@ -1,6 +1,7 @@
 package id.manajemenasrama.controller;
 
 import id.manajemenasrama.dto.*;
+import id.manajemenasrama.dto.kegiatan.JadwalKegiatanByDayDto;
 import id.manajemenasrama.dto.kegiatan.JadwalKegiatanListResponseDto;
 import id.manajemenasrama.dto.kegiatan.JadwalKegiatanRequestDto;
 import id.manajemenasrama.dto.kegiatan.JadwalKegiatanResponseDto;
@@ -64,5 +65,9 @@ public class JadwalKegiatanController {
         return jadwalKegiatanService.meToday();
     }
 
+    @GetMapping(value = {"/me/by-day"})
+    public ResponseEntity<BaseResponse<JadwalKegiatanByDayDto>> meByDay() {
+        return jadwalKegiatanService.meByDay();
+    }
 
 }

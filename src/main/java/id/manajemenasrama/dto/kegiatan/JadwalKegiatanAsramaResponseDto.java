@@ -1,4 +1,4 @@
-package id.manajemenasrama.dto.asrama;
+package id.manajemenasrama.dto.kegiatan;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;

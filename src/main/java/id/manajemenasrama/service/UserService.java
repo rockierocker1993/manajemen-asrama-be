@@ -2,9 +2,9 @@ package id.manajemenasrama.service;
 
 import id.manajemenasrama.constant.ResponseCode;
 import id.manajemenasrama.dto.BaseResponse;
-import id.manajemenasrama.dto.user.ProfileResponseDto;
-import id.manajemenasrama.dto.user.UpdateUserRequestDto;
-import id.manajemenasrama.dto.user.UserResponseDto;
+import id.manajemenasrama.dto.auth.LoginRequest;
+import id.manajemenasrama.dto.auth.TokenResponse;
+import id.manajemenasrama.dto.user.*;
 import id.manajemenasrama.entity.Role;
 import id.manajemenasrama.entity.User;
 import id.manajemenasrama.exception.BadRequestException;
@@ -34,6 +34,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthService authService;
 
     public ResponseEntity<BaseResponse<ProfileResponseDto>> me() {
         log.info("get profile current usser");
@@ -119,6 +120,33 @@ public class UserService {
                         .role(role.getName())
                         .build()
                 )
+        );
+    }
+
+    public ResponseEntity<BaseResponse<TokenResponse>> meUpdate(UpdateProfileRequestDto updateProfileRequestDto) {
+        log.info("update user");
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BadRequestException(ResponseCode.USER_NOT_FOUND));
+        User userExist = userRepository.findByUsernameAndIdNot(updateProfileRequestDto.getUsername(), user.getId())
+                .orElse(null);
+        if (userExist != null) {
+            throw new BadRequestException(ResponseCode.USERNAME_ALREADY_REGISTERED);
+        }
+
+        user.setUsername(updateProfileRequestDto.getUsername());
+        user.setFullName(updateProfileRequestDto.getFullName());
+        user.setUpdatedBy(username);
+        if (StringUtils.hasText(updateProfileRequestDto.getPassword())) {
+            user.setPassword(passwordEncoder.encode(updateProfileRequestDto.getPassword()));
+        }
+        userRepository.save(user);
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(ResponseCode.UPDATE_SUCCESS, authService.loginToken(LoginRequest.builder()
+                                .password(updateProfileRequestDto.getPassword())
+                                .username(updateProfileRequestDto.getUsername())
+                        .build()))
         );
     }
 }

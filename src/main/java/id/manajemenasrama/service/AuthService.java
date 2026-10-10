@@ -51,6 +51,12 @@ public class AuthService {
 
     public ResponseEntity<BaseResponse<TokenResponse>> login(LoginRequest loginRequest) {
         log.info("Attempting to authenticate user: {}", loginRequest.getUsername());
+        return ResponseEntity.ok(ResponseUtil.buildSuccessResponse(ResponseCode.SUCCESS,
+                loginToken(loginRequest)
+        ));
+    }
+
+    public TokenResponse loginToken(LoginRequest loginRequest){
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -66,7 +72,7 @@ public class AuthService {
                     .collect(Collectors.joining(" "));
 
             JwtClaimsSet claims = JwtClaimsSet.builder()
-                    .issuer("user-management-api")
+                    .issuer("manajemen-asrama-api")
                     .issuedAt(now)
                     .expiresAt(expiresAt)
                     .subject(authentication.getName())
@@ -76,14 +82,12 @@ public class AuthService {
             JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
             String token = jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
 
-            return ResponseEntity.ok(ResponseUtil.buildSuccessResponse(ResponseCode.SUCCESS,
-                    TokenResponse.builder()
-                            .accessToken(token)
-                            .tokenType("Bearer")
-                            .expiresIn(expiresAt.getEpochSecond() - now.getEpochSecond())
-                            .scope(scope)
-                            .build()
-            ));
+            return TokenResponse.builder()
+                    .accessToken(token)
+                    .tokenType("Bearer")
+                    .expiresIn(expiresAt.getEpochSecond() - now.getEpochSecond())
+                    .scope(scope)
+                    .build();
 
         } catch (AuthenticationException e) {
             throw new UnauthorizedException(ResponseCode.INVALID_USERNAME_PASSWORD);

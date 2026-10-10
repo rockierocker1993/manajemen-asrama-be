@@ -1,7 +1,9 @@
 package id.manajemenasrama.controller;
 
 import id.manajemenasrama.dto.BaseResponse;
+import id.manajemenasrama.dto.auth.TokenResponse;
 import id.manajemenasrama.dto.user.ProfileResponseDto;
+import id.manajemenasrama.dto.user.UpdateProfileRequestDto;
 import id.manajemenasrama.dto.user.UpdateUserRequestDto;
 import id.manajemenasrama.dto.user.UserResponseDto;
 import id.manajemenasrama.service.UserService;
@@ -23,6 +25,11 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<BaseResponse<ProfileResponseDto>> me() {
         return userService.me();
+    }
+
+    @PutMapping(value = {"/me"})
+    public ResponseEntity<BaseResponse<TokenResponse>> meUpdate(@Valid @RequestBody UpdateProfileRequestDto request) {
+        return userService.meUpdate(request);
     }
 
     @GetMapping(value = {"", "/"})

@@ -25,7 +25,7 @@ public class JadwalKegiatanRequestDto {
     private String kategori;
 
     @NotNull(message = "Hari is required")
-    private Integer hari;
+    private List<String> hari;
 
     @NotNull(message = "Jam Awal is required")
     @JsonFormat(pattern = "HH:mm")
@@ -44,7 +44,7 @@ public class JadwalKegiatanRequestDto {
     private LocalDate tanggalAkhirEfektif;
 
     @NotBlank(message = "Tipe Kegiatan is required")
-    private String tipeKegiatan;//UMUM / KHUSUS
+    private String tipeKegiatan;//UMUM / USTADZAH / ASRAMA / USTADZAH & ASRAMA
 
     private boolean status = true;
 

@@ -2,7 +2,7 @@ package id.manajemenasrama.controller;
 
 import id.manajemenasrama.dto.BaseResponse;
 import id.manajemenasrama.dto.user.ProfileResponseDto;
-import id.manajemenasrama.dto.kegiatan.UpdateUserRequestDto;
+import id.manajemenasrama.dto.user.UpdateUserRequestDto;
 import id.manajemenasrama.dto.user.UserResponseDto;
 import id.manajemenasrama.service.UserService;
 import jakarta.validation.Valid;

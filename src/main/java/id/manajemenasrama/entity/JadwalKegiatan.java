@@ -26,8 +26,8 @@ public class JadwalKegiatan extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 1, nullable = false)
-    private Integer hari;//1 = SENIN, 2 = SELASA, 3 = RABU, 4 = KAMIS, 5 = JUMAT, 6 = SABTU, 7 = MINGGU
+    @Column(length = 15, nullable = false)
+    private String hari;//1 = SENIN, 2 = SELASA, 3 = RABU, 4 = KAMIS, 5 = JUMAT, 6 = SABTU, 7 = MINGGU
 
     @Column(nullable = false)
     private LocalTime jamAwal;
@@ -50,10 +50,10 @@ public class JadwalKegiatan extends BaseEntity {
     @JoinTable(
             name = "jadwal_kegiatan_user",
             joinColumns = {
-                    @JoinColumn(name = "user_id")
+                    @JoinColumn(name = "jadwal_kegiatan_id")
             },
             inverseJoinColumns = {
-                    @JoinColumn(name = "jadwal_kegiatan_id")
+                    @JoinColumn(name = "user_id")
             }
     )
     private List<User> jadwalKegiatanUsers = new ArrayList<>();
@@ -63,10 +63,10 @@ public class JadwalKegiatan extends BaseEntity {
     @JoinTable(
             name = "jadwal_kegiatan_asrama",
             joinColumns = {
-                    @JoinColumn(name = "asrama_id")
+                    @JoinColumn(name = "jadwal_kegiatan_id")
             },
             inverseJoinColumns = {
-                    @JoinColumn(name = "jadwal_kegiatan_id")
+                    @JoinColumn(name = "asrama_id")
             }
     )
     private List<Asrama> jadwalKegiatanAsrama = new ArrayList<>();

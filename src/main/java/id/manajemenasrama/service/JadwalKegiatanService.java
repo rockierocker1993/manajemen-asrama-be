@@ -7,6 +7,7 @@ import id.manajemenasrama.entity.*;
 import id.manajemenasrama.exception.BadRequestException;
 import id.manajemenasrama.repository.*;
 import id.manajemenasrama.util.CommonUtil;
+import id.manajemenasrama.util.DateUtil;
 import id.manajemenasrama.util.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +52,7 @@ public class JadwalKegiatanService {
         log.info("get jadwal kegiatan by id {}", id);
         JadwalKegiatan jadwalKegiatan = jadwalKegiatanRepository.findById(id).orElseThrow(() -> new BadRequestException(ResponseCode.JADWAL_KEGIATAN_NOT_FOUND));
         return ResponseEntity.ok(
-                ResponseUtil.buildSuccessResponse(ResponseCode.CREATE_SUCCESS, buildResponse(jadwalKegiatan))
+                ResponseUtil.buildSuccessResponse(ResponseCode.SUCCESS, buildResponse(jadwalKegiatan))
         );
     }
 
@@ -87,12 +89,12 @@ public class JadwalKegiatanService {
         JadwalKegiatan jadwalKegiatan = jadwalKegiatanRepository.findById(id).orElseThrow(() -> new BadRequestException(ResponseCode.JADWAL_KEGIATAN_NOT_FOUND));
         jadwalKegiatan.setDeleted(LocalDateTime.now());
         jadwalKegiatan.setUpdatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
-        if (!jadwalKegiatanRepository.existsByKegiatanAndIdIsNot(jadwalKegiatan.getKegiatan(), id)) {
-            Kegiatan kegiatan = jadwalKegiatan.getKegiatan();
-            kegiatan.setDeleted(LocalDateTime.now());
-            kegiatan.setUpdatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
-            kegiatanRepository.save(kegiatan);
-        }
+//        if (!jadwalKegiatanRepository.existsByKegiatanAndIdIsNot(jadwalKegiatan.getKegiatan(), id)) {
+//            Kegiatan kegiatan = jadwalKegiatan.getKegiatan();
+//            kegiatan.setDeleted(LocalDateTime.now());
+//            kegiatan.setUpdatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
+//            kegiatanRepository.save(kegiatan);
+//        }
         jadwalKegiatanRepository.save(jadwalKegiatan);
         return ResponseEntity.ok(
                 ResponseUtil.buildSuccessResponse(ResponseCode.DELETE_SUCCESS, null)
@@ -109,7 +111,8 @@ public class JadwalKegiatanService {
             jadwalKegiatan = new JadwalKegiatan();
             jadwalKegiatan.setUpdatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
         }
-        jadwalKegiatan.setHari(jadwalKegiatanRequestDto.getHari());
+        jadwalKegiatan.setTipeKegiatan(jadwalKegiatanRequestDto.getTipeKegiatan());
+        jadwalKegiatan.setHari(String.join(",", jadwalKegiatanRequestDto.getHari()));
         jadwalKegiatan.setJamAwal(jadwalKegiatanRequestDto.getJamAwal());
         jadwalKegiatan.setJamAkhir(jadwalKegiatanRequestDto.getJamAkhir());
         jadwalKegiatan.setTanggalAkhirEfektif(jadwalKegiatanRequestDto.getTanggalAkhirEfektif());
@@ -164,6 +167,7 @@ public class JadwalKegiatanService {
         if (Objects.nonNull(jadwalKegiatan.getJadwalKegiatanUsers()) && !jadwalKegiatan.getJadwalKegiatanUsers().isEmpty()) {
             for (User user : jadwalKegiatan.getJadwalKegiatanUsers()) {
                 JadwalKegiatanUserDto jadwalKegiatanUserDto = JadwalKegiatanUserDto.builder()
+                        .id(user.getId())
                         .role(Objects.nonNull(user.getRole()) ? user.getRole().getName() : null)
                         .username(user.getUsername())
                         .fullName(user.getFullName())
@@ -188,7 +192,7 @@ public class JadwalKegiatanService {
                 .nama(jadwalKegiatan.getKegiatan().getNama())
                 .deskripsi(jadwalKegiatan.getKegiatan().getDeskripsi())
                 .kategori(jadwalKegiatan.getKegiatan().getKategori().getNama())
-                .hari(jadwalKegiatan.getHari())
+                .hari(List.of(jadwalKegiatan.getHari().split(",")))
                 .jamAwal(jadwalKegiatan.getJamAwal())
                 .jamAkhir(jadwalKegiatan.getJamAkhir())
                 .tanggalAwalEfektif(jadwalKegiatan.getTanggalAwalEfektif())
@@ -198,5 +202,12 @@ public class JadwalKegiatanService {
                 .jadwalKegiatanUsers(jadwalKegiatanUserDtos)
                 .jadwalKegiatanAsrama(jadwalKegiatanAsramaDtos)
                 .build();
+    }
+
+    public ResponseEntity<BaseResponse<List<JadwalKegiatanListResponseDto>>> meToday() {
+        log.info("get jadwal kegiatan me today");
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<JadwalKegiatanListResponseDto> jadwalKegiatanListResponseDtos = jadwalKegiatanRepository.findActiveTodayByUsernameAndHari(username, String.valueOf(DateUtil.getDayOfWeek(LocalDate.now())));
+        return ResponseEntity.ok(ResponseUtil.buildSuccessResponse(ResponseCode.SUCCESS, jadwalKegiatanListResponseDtos));
     }
 }

@@ -3,7 +3,7 @@ package id.manajemenasrama.service;
 import id.manajemenasrama.constant.ResponseCode;
 import id.manajemenasrama.dto.BaseResponse;
 import id.manajemenasrama.dto.user.ProfileResponseDto;
-import id.manajemenasrama.dto.kegiatan.UpdateUserRequestDto;
+import id.manajemenasrama.dto.user.UpdateUserRequestDto;
 import id.manajemenasrama.dto.user.UserResponseDto;
 import id.manajemenasrama.entity.Role;
 import id.manajemenasrama.entity.User;

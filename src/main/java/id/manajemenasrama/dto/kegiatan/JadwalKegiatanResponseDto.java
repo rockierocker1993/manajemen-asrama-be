@@ -22,7 +22,7 @@ public class JadwalKegiatanResponseDto {
     private String nama;
     private String deskripsi;
     private String kategori;
-    private Integer hari;
+    private List<String> hari;
     @JsonFormat(pattern = "HH:mm")
     private LocalTime jamAwal;
     @JsonFormat(pattern = "HH:mm")

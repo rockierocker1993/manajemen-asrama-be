@@ -49,7 +49,7 @@ public class JadwalKegiatanController {
 
     @DeleteMapping(value = {"/{id}"})
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','PENGURUS')")
-    public ResponseEntity<BaseResponse<Void>> delete(@Valid @RequestBody JadwalKegiatanRequestDto jadwalKegiatanRequestDto, @PathVariable("id") Long id) {
+    public ResponseEntity<BaseResponse<Void>> delete(@PathVariable("id") Long id) {
         return jadwalKegiatanService.delete(id);
     }
 
@@ -57,6 +57,11 @@ public class JadwalKegiatanController {
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','PENGURUS')")
     public ResponseEntity<BaseResponse<Void>> activeDeactive(@PathVariable("id") Long id, @PathVariable("activeDeactive") boolean activeDeactive) {
         return jadwalKegiatanService.activeDeactive(id, activeDeactive);
+    }
+
+    @GetMapping(value = {"/me/today"})
+    public ResponseEntity<BaseResponse<List<JadwalKegiatanListResponseDto>>> meToday() {
+        return jadwalKegiatanService.meToday();
     }
 
 

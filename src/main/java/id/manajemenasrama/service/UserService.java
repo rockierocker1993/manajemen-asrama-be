@@ -100,13 +100,14 @@ public class UserService {
     public ResponseEntity<BaseResponse<UserResponseDto>> update(UpdateUserRequestDto updateUserRequestDto) {
         log.info("update user");
 
-        User user = userRepository.findByUsername(updateUserRequestDto.getUsername())
+        User user = userRepository.findByUsername(updateUserRequestDto.getCurrentUsername().toLowerCase().trim())
                 .orElseThrow(() -> new BadRequestException(ResponseCode.USER_NOT_FOUND));
         Role role = roleRepository.findByName(updateUserRequestDto.getRole())
                 .orElseThrow(() -> new BadRequestException(ResponseCode.ROLE_NOT_FOUND));
 
         user.setFullName(updateUserRequestDto.getFullName());
         user.setRole(role);
+        user.setUsername(updateUserRequestDto.getUsername());
         user.setUpdatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
         if (StringUtils.hasText(updateUserRequestDto.getPassword())) {
             user.setPassword(passwordEncoder.encode(updateUserRequestDto.getPassword()));

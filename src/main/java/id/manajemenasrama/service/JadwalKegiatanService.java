@@ -215,7 +215,9 @@ public class JadwalKegiatanService {
     public ResponseEntity<BaseResponse<JadwalKegiatanByDayDto>> meByDay() {
         log.info("get jadwal kegiatan me by day");
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        List<JadwalKegiatanListByDayResponseDto> jadwalKegiatanListResponseDtos = jadwalKegiatanRepository.findActiveTodayByUsername(username);
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new BadRequestException(ResponseCode.USER_NOT_FOUND));
+        String role = user.getRole().getName();
+        List<JadwalKegiatanListByDayResponseDto> jadwalKegiatanListResponseDtos = "USTADZAH".equalsIgnoreCase(role) ? jadwalKegiatanRepository.findActiveTodayByUsername(username) : jadwalKegiatanRepository.findActiveToday();
         return ResponseEntity.ok(ResponseUtil.buildSuccessResponse(ResponseCode.SUCCESS, JadwalKegiatanByDayDto.builder()
                         .senin(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("1")).toList())
                         .selasa(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("2")).toList())

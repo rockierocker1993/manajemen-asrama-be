@@ -40,13 +40,13 @@ public class AsramaController {
 	}
 
 	@PostMapping
-	@PreAuthorize("hasAnyAuthority('SUPER_ADMIN','PENGURUS','USTADZAH')")
+	@PreAuthorize("hasAnyAuthority('SUPER_ADMIN','PENGURUS')")
 	public ResponseEntity<BaseResponse<AsramaResponseDto>> create(@Valid @RequestBody AsramaRequestDto request) {
 		return asramaService.create(request);
 	}
 
 	@PutMapping("/{id}")
-	@PreAuthorize("hasAnyAuthority('SUPER_ADMIN','PENGURUS','USTADZAH')")
+	@PreAuthorize("hasAnyAuthority('SUPER_ADMIN','PENGURUS')")
 	public ResponseEntity<BaseResponse<AsramaResponseDto>> update(
 			@PathVariable Long id,
 			@Valid @RequestBody AsramaRequestDto request) {
@@ -54,7 +54,7 @@ public class AsramaController {
 	}
 
 	@DeleteMapping("/{id}")
-	@PreAuthorize("hasAnyAuthority('SUPER_ADMIN','PENGURUS','USTADZAH')")
+	@PreAuthorize("hasAnyAuthority('SUPER_ADMIN','PENGURUS')")
 	public ResponseEntity<BaseResponse<Void>> delete(@PathVariable Long id) {
 		return asramaService.delete(id);
 	}

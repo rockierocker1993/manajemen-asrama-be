@@ -52,7 +52,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
                         .requestMatchers(
-                                "/api/auth/login",
+                                "/api/auth/login","/api/generate-password/**",
                                 "/error"
                         ).permitAll()
                         // All other endpoints require authentication

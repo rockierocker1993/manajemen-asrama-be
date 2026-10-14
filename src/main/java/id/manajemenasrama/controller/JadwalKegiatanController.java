@@ -70,4 +70,9 @@ public class JadwalKegiatanController {
         return jadwalKegiatanService.meByDay();
     }
 
+    @GetMapping(value = {"/asrama/by-day"})
+    public ResponseEntity<BaseResponse<JadwalKegiatanByDayDto>> asramaByDay() {
+        return jadwalKegiatanService.meByDay();
+    }
+
 }

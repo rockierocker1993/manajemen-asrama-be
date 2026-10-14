@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -45,5 +46,12 @@ public class ApiExceptionHandler {
         log.error("Unhandled exception occurred: ", ex);
         ResponseCode responseCode = ResponseCode.UKNOWN_ERROR;
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseUtil.buildSuccessResponse(responseCode, null));
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<BaseResponse> handleAuthorizationDeniedException(Exception ex, HttpServletRequest request) {
+        log.error("AuthorizationDeniedException ", ex);
+        ResponseCode responseCode = ResponseCode.UNAUTHORIZED;
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseUtil.buildSuccessResponse(responseCode, null));
     }
 }

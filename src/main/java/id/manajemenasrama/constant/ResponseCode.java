@@ -113,6 +113,30 @@ public enum ResponseCode {
             "Error",
             "Error"
     ),
+    IJIN_NOT_FOUND(
+            "RC013",
+            false,
+            "Ijin tidak ditemukan.",
+            "Ijin not found.",
+            "Error",
+            "Error"
+    ),
+    IJIN_APPROVED(
+            "RC014",
+            false,
+            "Ijin disetujui.",
+            "Ijin approved.",
+            "Info",
+            "Info"
+    ),
+    IJIN_REJECTED(
+            "RC014",
+            false,
+            "Ijin tidak disetujui.",
+            "Ijin rejected.",
+            "Info",
+            "Info"
+    ),
     UNAUTHORIZED(
             "RC998",
             false,

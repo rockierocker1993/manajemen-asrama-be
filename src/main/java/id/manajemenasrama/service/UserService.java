@@ -139,15 +139,18 @@ public class UserService {
         user.setUsername(updateProfileRequestDto.getUsername());
         user.setFullName(updateProfileRequestDto.getFullName());
         user.setUpdatedBy(username);
+        TokenResponse tokenResponse = null;
         if (StringUtils.hasText(updateProfileRequestDto.getPassword())) {
             user.setPassword(passwordEncoder.encode(updateProfileRequestDto.getPassword()));
+            tokenResponse = authService.loginToken(LoginRequest.builder()
+                    .password(updateProfileRequestDto.getPassword())
+                    .username(updateProfileRequestDto.getUsername())
+                    .build());
         }
+
         userRepository.save(user);
         return ResponseEntity.ok(
-                ResponseUtil.buildSuccessResponse(ResponseCode.UPDATE_SUCCESS, authService.loginToken(LoginRequest.builder()
-                                .password(updateProfileRequestDto.getPassword())
-                                .username(updateProfileRequestDto.getUsername())
-                        .build()))
+                ResponseUtil.buildSuccessResponse(ResponseCode.UPDATE_SUCCESS, tokenResponse)
         );
     }
 }

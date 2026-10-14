@@ -123,7 +123,7 @@ public enum ResponseCode {
     ),
     IJIN_APPROVED(
             "RC014",
-            false,
+            true,
             "Ijin disetujui.",
             "Ijin approved.",
             "Info",
@@ -131,7 +131,7 @@ public enum ResponseCode {
     ),
     IJIN_REJECTED(
             "RC014",
-            false,
+            true,
             "Ijin tidak disetujui.",
             "Ijin rejected.",
             "Info",

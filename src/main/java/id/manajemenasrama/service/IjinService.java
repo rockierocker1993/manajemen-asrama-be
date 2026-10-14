@@ -14,12 +14,16 @@ import id.manajemenasrama.util.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
-import java.time.LocalDateTime;
+import jakarta.persistence.criteria.Predicate;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -30,9 +34,40 @@ public class IjinService {
     private final IjinRepository ijinRepository;
     private final UserRepository userRepository;
 
-    public ResponseEntity<BaseResponse<List<IjinResponseDto>>> list() {
+    public ResponseEntity<BaseResponse<List<IjinResponseDto>>> list(
+            LocalDate tanggalIjinFrom,
+            LocalDate tanggalIjinTo,
+            String tipeIjin,
+            String status,
+            String namaSantri
+    ) {
         log.info("get list ijin");
-        List<IjinResponseDto> data = ijinRepository.findAll(Sort.by(Sort.Direction.DESC, "updated", "id"))
+        Specification<Ijin> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (tanggalIjinFrom != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("tanggalIjin"), tanggalIjinFrom));
+            }
+            if (tanggalIjinTo != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("tanggalIjin"), tanggalIjinTo));
+            }
+            if (StringUtils.hasText(tipeIjin)) {
+                predicates.add(criteriaBuilder.equal(criteriaBuilder.upper(root.get("tipeIjin")), tipeIjin.trim().toUpperCase()));
+            }
+            if (StringUtils.hasText(status)) {
+                predicates.add(criteriaBuilder.equal(criteriaBuilder.upper(root.get("status")), status.trim().toUpperCase()));
+            }
+            if (StringUtils.hasText(namaSantri)) {
+                predicates.add(criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("namaSantri")),
+                        "%" + namaSantri.trim().toLowerCase() + "%"
+                ));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+
+        List<IjinResponseDto> data = ijinRepository.findAll(specification, Sort.by(Sort.Direction.DESC, "updated", "id"))
                 .stream()
                 .map(this::toResponse)
                 .toList();

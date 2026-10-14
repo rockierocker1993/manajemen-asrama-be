@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -28,8 +31,13 @@ public class IjinController {
 
     @GetMapping(value = {"", "/"})
     @PreAuthorize("hasAnyAuthority('PENGURUS','USTADZAH')")
-    public ResponseEntity<BaseResponse<List<IjinResponseDto>>> getAll() {
-        return ijinService.list();
+    public ResponseEntity<BaseResponse<List<IjinResponseDto>>> getAll(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate tanggalIjinFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate tanggalIjinTo,
+            @RequestParam(required = false) String tipeIjin,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String namaSantri) {
+        return ijinService.list(tanggalIjinFrom, tanggalIjinTo, tipeIjin, status, namaSantri);
     }
 
     @GetMapping("/{id}")

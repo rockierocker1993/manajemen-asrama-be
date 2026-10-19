@@ -85,6 +85,24 @@ public class UserService {
         );
     }
 
+    public ResponseEntity<BaseResponse<List<UstdazahResponseDto>>> getAllUstadzah() {
+        log.info("get all user ustadzah");
+        List<User> users = userRepository.findAllByRole_name("USTADZAH");
+        List<UstdazahResponseDto> userResponseDto = new ArrayList<>();
+        for (User user : users) {
+            String role = user.getRole() != null
+                    ? user.getRole().getName()
+                    : null;
+            userResponseDto.add(UstdazahResponseDto.builder()
+                    .fullName(user.getFullName())
+                    .id(user.getId())
+                    .build());
+        }
+        return ResponseEntity.ok(
+                ResponseUtil.buildSuccessResponse(ResponseCode.SUCCESS, userResponseDto)
+        );
+    }
+
     public ResponseEntity<BaseResponse<Void>> delete(String username) {
         log.info("delete user");
         User user = userRepository.findByUsername(username.toLowerCase().trim())

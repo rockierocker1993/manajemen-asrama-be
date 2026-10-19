@@ -2,10 +2,7 @@ package id.manajemenasrama.controller;
 
 import id.manajemenasrama.dto.BaseResponse;
 import id.manajemenasrama.dto.auth.TokenResponse;
-import id.manajemenasrama.dto.user.ProfileResponseDto;
-import id.manajemenasrama.dto.user.UpdateProfileRequestDto;
-import id.manajemenasrama.dto.user.UpdateUserRequestDto;
-import id.manajemenasrama.dto.user.UserResponseDto;
+import id.manajemenasrama.dto.user.*;
 import id.manajemenasrama.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +33,12 @@ public class UserController {
     @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     public ResponseEntity<BaseResponse<List<UserResponseDto>>> getAll() {
         return userService.getAll();
+    }
+
+    @GetMapping(value = {"/ustadzah"})
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','PENGURUS')")
+    public ResponseEntity<BaseResponse<List<UstdazahResponseDto>>> getAllUstadzah() {
+        return userService.getAllUstadzah();
     }
 
     @PutMapping(value = {"", "/"})

@@ -1,0 +1,778 @@
+{
+  "info": {
+    "_postman_id": "3c7d7d18-4ed1-4d87-95ac-04a1b2f5a0d3",
+    "name": "Manajemen Asrama API",
+    "description": "Postman collection untuk endpoint backend Manajemen Asrama. Login akan menyimpan access token ke environment variable `access_token` secara otomatis.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Login menggunakan username dan password di body. Response token disimpan ke environment `access_token`."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "try {",
+                  "  var json = pm.response.json();",
+                  "  if (json && json.data && json.data.access_token) {",
+                  "    pm.environment.set('access_token', json.data.access_token);",
+                  "  }",
+                  "  if (json && json.data && json.data.scope) {",
+                  "    pm.environment.set('scope', json.data.scope);",
+                  "  }",
+                  "} catch (e) {",
+                  "  console.log('Unable to parse login response', e);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Register",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"new_user\",\n  \"password\": \"password123\",\n  \"full_name\": \"New User\",\n  \"role\": \"PENGURUS\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Register user baru. Endpoint ini membutuhkan hak akses SUPER_ADMIN."
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Password",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/generate-password/{{password}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "generate-password",
+                "{{password}}"
+              ]
+            },
+            "description": "Endpoint utilitas untuk menghasilkan password hash."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/users/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "description": "Ambil profil user yang sedang login."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Me",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"full_name\": \"{{full_name}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "description": "Update profil sendiri. Jika password berubah, response mengandung token baru."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
+            },
+            "description": "Ambil semua user."
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_username\": \"{{current_username}}\",\n  \"username\": \"{{username}}\",\n  \"full_name\": \"{{full_name}}\",\n  \"role\": \"{{role}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
+            },
+            "description": "Update data user lain (SUPER_ADMIN)."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/users/{{username}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{username}}"
+              ]
+            },
+            "description": "Soft delete user berdasarkan username."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Asrama",
+      "item": [
+        {
+          "name": "Get All Asrama",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/asrama",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "asrama"
+              ]
+            },
+            "description": "Ambil semua asrama."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Asrama By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/asrama/{{asrama_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "asrama",
+                "{{asrama_id}}"
+              ]
+            },
+            "description": "Ambil detail asrama berdasarkan ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Asrama",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"Asrama Putra\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/asrama",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "asrama"
+              ]
+            },
+            "description": "Buat asrama baru."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Asrama",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"Asrama Putri\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/asrama/{{asrama_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "asrama",
+                "{{asrama_id}}"
+              ]
+            },
+            "description": "Update data asrama."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Asrama",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/asrama/{{asrama_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "asrama",
+                "{{asrama_id}}"
+              ]
+            },
+            "description": "Soft delete asrama."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Ijin",
+      "item": [
+        {
+          "name": "Get All Ijin",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/ijin?tanggalIjinFrom={{tanggalIjinFrom}}&tanggalIjinTo={{tanggalIjinTo}}&tipeIjin={{tipeIjin}}&status={{status}}&namaSantri={{namaSantri}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "ijin"
+              ],
+              "query": [
+                {
+                  "key": "tanggalIjinFrom",
+                  "value": "{{tanggalIjinFrom}}"
+                },
+                {
+                  "key": "tanggalIjinTo",
+                  "value": "{{tanggalIjinTo}}"
+                },
+                {
+                  "key": "tipeIjin",
+                  "value": "{{tipeIjin}}"
+                },
+                {
+                  "key": "status",
+                  "value": "{{status}}"
+                },
+                {
+                  "key": "namaSantri",
+                  "value": "{{namaSantri}}"
+                }
+              ]
+            },
+            "description": "Ambil daftar izin dengan filter opsional."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Ijin By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/ijin/{{ijin_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "ijin",
+                "{{ijin_id}}"
+              ]
+            },
+            "description": "Ambil detail izin."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Ijin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama_santri\": \"Ahmad\",\n  \"tanggal_ijin\": \"2026-10-16\",\n  \"tipe_ijin\": \"IJIN\",\n  \"alasan\": \"Keluar kota\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ijin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "ijin"
+              ]
+            },
+            "description": "Buat data izin baru. Status awal bergantung role user login."
+          },
+          "response": []
+        },
+        {
+          "name": "Approval Ijin",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"APPROVED\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ijin/approval/{{ijin_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "ijin",
+                "approval",
+                "{{ijin_id}}"
+              ]
+            },
+            "description": "Setujui atau tolak izin."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Jadwal Kegiatan",
+      "item": [
+        {
+          "name": "Get Active Schedules",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/jadwal-kegiatan/active",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "jadwal-kegiatan",
+                "active"
+              ]
+            },
+            "description": "Ambil jadwal kegiatan aktif."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Schedules",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/jadwal-kegiatan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "jadwal-kegiatan"
+              ]
+            },
+            "description": "Ambil semua jadwal kegiatan."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Schedule By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/jadwal-kegiatan/{{jadwal_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "jadwal-kegiatan",
+                "{{jadwal_id}}"
+              ]
+            },
+            "description": "Ambil detail jadwal kegiatan berdasarkan ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Schedule",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"Kajian Pagi\",\n  \"deskripsi\": \"Kajian rutin pagi\",\n  \"kategori\": \"Keagamaan\",\n  \"hari\": [\"1\", \"3\", \"5\"],\n  \"jam_awal\": \"19:00\",\n  \"jam_akhir\": \"20:00\",\n  \"tanggal_awal_efektif\": \"2026-10-01\",\n  \"tanggal_akhir_efektif\": \"2026-12-31\",\n  \"tipe_kegiatan\": \"UMUM\",\n  \"status\": true,\n  \"jadwal_kegiatan_user_ids\": [1],\n  \"jadwal_kegiatan_asrama_ids\": [1]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/jadwal-kegiatan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "jadwal-kegiatan"
+              ]
+            },
+            "description": "Buat jadwal kegiatan baru."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Schedule",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"Kajian Malam\",\n  \"deskripsi\": \"Kajian rutin malam\",\n  \"kategori\": \"Keagamaan\",\n  \"hari\": [\"2\", \"4\"],\n  \"jam_awal\": \"19:30\",\n  \"jam_akhir\": \"20:30\",\n  \"tanggal_awal_efektif\": \"2026-10-01\",\n  \"tanggal_akhir_efektif\": \"2026-12-31\",\n  \"tipe_kegiatan\": \"UMUM\",\n  \"status\": true,\n  \"jadwal_kegiatan_user_ids\": [1],\n  \"jadwal_kegiatan_asrama_ids\": [1]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/jadwal-kegiatan/{{jadwal_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "jadwal-kegiatan",
+                "{{jadwal_id}}"
+              ]
+            },
+            "description": "Update jadwal kegiatan berdasarkan ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Schedule",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/jadwal-kegiatan/{{jadwal_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "jadwal-kegiatan",
+                "{{jadwal_id}}"
+              ]
+            },
+            "description": "Soft delete jadwal kegiatan."
+          },
+          "response": []
+        },
+        {
+          "name": "Active Deactive Schedule",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/jadwal-kegiatan/active-deactive/{{jadwal_id}}/{{activeDeactive}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "jadwal-kegiatan",
+                "active-deactive",
+                "{{jadwal_id}}",
+                "{{activeDeactive}}"
+              ]
+            },
+            "description": "Ubah status aktif/nonaktif jadwal kegiatan."
+          },
+          "response": []
+        },
+        {
+          "name": "Me Today",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/jadwal-kegiatan/me/today",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "jadwal-kegiatan",
+                "me",
+                "today"
+              ]
+            },
+            "description": "Jadwal kegiatan hari ini untuk user login."
+          },
+          "response": []
+        },
+        {
+          "name": "Me By Day",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/jadwal-kegiatan/me/by-day",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "jadwal-kegiatan",
+                "me",
+                "by-day"
+              ]
+            },
+            "description": "Jadwal kegiatan user login yang dikelompokkan per hari."
+          },
+          "response": []
+        },
+        {
+          "name": "Asrama By Day",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/jadwal-kegiatan/asrama/by-day",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "jadwal-kegiatan",
+                "asrama",
+                "by-day"
+              ]
+            },
+            "description": "Jadwal kegiatan asrama yang dikelompokkan per hari."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Kategori",
+      "item": [
+        {
+          "name": "Get All Kategori",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/kategori",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "kategori"
+              ]
+            },
+            "description": "Ambil semua nama kategori."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Kegiatan",
+      "item": [
+        {
+          "name": "Get All Kegiatan",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/kegiatan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "kegiatan"
+              ]
+            },
+            "description": "Ambil daftar kegiatan."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
+

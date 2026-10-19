@@ -219,7 +219,7 @@ public class JadwalKegiatanService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username).orElseThrow(() -> new BadRequestException(ResponseCode.USER_NOT_FOUND));
         String role = user.getRole().getName();
-        List<JadwalKegiatanListByDayResponseDto> jadwalKegiatanListResponseDtos = "USTADZAH".equalsIgnoreCase(role) ? jadwalKegiatanRepository.findActiveTodayByUsername(username) : jadwalKegiatanRepository.findActiveToday();
+        List<JadwalKegiatanListByDayResponseDto> jadwalKegiatanListResponseDtos = "USTADZAH".equalsIgnoreCase(role) ? jadwalKegiatanRepository.findActiveByUsername(username) : jadwalKegiatanRepository.findActive();
         return ResponseEntity.ok(ResponseUtil.buildSuccessResponse(ResponseCode.SUCCESS, JadwalKegiatanByDayDto.builder()
                         .senin(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("1")).toList())
                         .selasa(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("2")).toList())
@@ -228,6 +228,20 @@ public class JadwalKegiatanService {
                         .jumat(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("5")).toList())
                         .sabtu(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("6")).toList())
                         .minggu(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("7")).toList())
+                .build()));
+    }
+
+    public ResponseEntity<BaseResponse<JadwalKegiatanByDayDto>> asramaByDay(Long asramaId) {
+        log.info("get jadwal kegiatan asrama by day");
+        List<JadwalKegiatanListByDayResponseDto> jadwalKegiatanListResponseDtos = jadwalKegiatanRepository.findActiveByAsramaId(asramaId);
+        return ResponseEntity.ok(ResponseUtil.buildSuccessResponse(ResponseCode.SUCCESS, JadwalKegiatanByDayDto.builder()
+                .senin(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("1")).toList())
+                .selasa(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("2")).toList())
+                .rabu(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("3")).toList())
+                .kamis(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("4")).toList())
+                .jumat(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("5")).toList())
+                .sabtu(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("6")).toList())
+                .minggu(jadwalKegiatanListResponseDtos.stream().filter(j -> j.getHari().contains("7")).toList())
                 .build()));
     }
 }

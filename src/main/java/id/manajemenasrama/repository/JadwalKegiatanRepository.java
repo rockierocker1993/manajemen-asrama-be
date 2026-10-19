@@ -259,7 +259,7 @@ public interface JadwalKegiatanRepository extends JpaRepository<JadwalKegiatan, 
                            jk.hari,
                            jk.jam_awal
             """, nativeQuery = true)
-    List<JadwalKegiatanListByDayResponseDto> findActiveTodayByUsername(@Param("username") String username);
+    List<JadwalKegiatanListByDayResponseDto> findActiveByUsername(@Param("username") String username);
 
     @Query(value = """
                     SELECT
@@ -317,6 +317,65 @@ public interface JadwalKegiatanRepository extends JpaRepository<JadwalKegiatan, 
                            jk.hari,
                            jk.jam_awal
             """, nativeQuery = true)
-    List<JadwalKegiatanListByDayResponseDto> findActiveToday();
+    List<JadwalKegiatanListByDayResponseDto> findActive();
+
+    @Query(value = """
+                    SELECT
+                           jk.id AS id,
+                           k.nama AS nama,
+                           kat.nama AS kategori,
+                           jk.hari AS hari,
+
+                           TO_CHAR(jk.jam_awal, 'HH24:MI') AS jamAwal,
+                           TO_CHAR(jk.jam_akhir, 'HH24:MI') AS jamAkhir,
+
+                           TO_CHAR(jk.tanggal_awal_efektif, 'DD-MM-YYYY') AS tanggalAwalEfektif,
+                           TO_CHAR(jk.tanggal_akhir_efektif, 'DD-MM-YYYY') AS tanggalAkhirEfektif,
+
+                           k.deskripsi AS deskripsi,
+                           jk.tipe_kegiatan AS tipeKegiatan,
+
+                           STRING_AGG(
+                               DISTINCT u.full_name,
+                               ', '
+                               ORDER BY u.full_name
+                           ) AS jadwalKegiatanUsers,
+
+                           STRING_AGG(
+                               DISTINCT a.nama,
+                               ', '
+                               ORDER BY a.nama
+                           ) AS jadwalKegiatanAsrama
+
+                       FROM jadwal_kegiatan jk
+                       LEFT JOIN kegiatan k ON k.id = jk.kegiatan_id
+                       LEFT JOIN kategori kat ON kat.id = k.kategori_id
+                       LEFT JOIN jadwal_kegiatan_user jku ON jku.jadwal_kegiatan_id = jk.id
+                       LEFT JOIN users u ON u.id = jku.user_id
+                       LEFT JOIN jadwal_kegiatan_asrama jka ON jka.jadwal_kegiatan_id = jk.id
+                       LEFT JOIN asrama a ON a.id = jka.asrama_id
+                       WHERE
+                       jk.status = true
+                       and jk.deleted is null
+                       and jk.tanggal_awal_efektif <= now()
+                       and jk.tanggal_akhir_efektif > now()
+                       and jka.asrama_id = :asramaId
+                       GROUP BY
+                           jk.id,
+                           k.nama,
+                           kat.nama,
+                           jk.hari,
+                           jk.jam_awal,
+                           jk.jam_akhir,
+                           jk.tanggal_awal_efektif,
+                           jk.tanggal_akhir_efektif,
+                           jk.status,
+                           k.deskripsi,
+                           jk.tipe_kegiatan
+                       ORDER BY
+                           jk.hari,
+                           jk.jam_awal
+            """, nativeQuery = true)
+    List<JadwalKegiatanListByDayResponseDto> findActiveByAsramaId(@Param("asramaId") Long asramaId);
 }
 
